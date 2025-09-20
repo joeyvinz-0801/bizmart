@@ -2,14 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BIZMART Redirect</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script>
-    window.location.replace(
-      "https://script.google.com/macros/s/AKfycbzgMUX1a78l_qtaF8mHF7duB2tjb5iEe4zBHtQ4O0lOSEemkEHFtFohapgUR7sIRpo2/exec"
-    );
-  </script>
+  <title>BIZMART Embed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden; /* avoid parent scrollbars */
+    }
+    iframe {
+      border: none;
+      display: block;
+      width: 100vw;   /* full device width */
+      height: 100vh;  /* full device height */
+    }
+  </style>
 </head>
 <body>
+  <iframe 
+    src="https://script.google.com/macros/s/AKfycbzgMUX1a78l_qtaF8mHF7duB2tjb5iEe4zBHtQ4O0lOSEemkEHFtFohapgUR7sIRpo2/exec"
+    allowfullscreen>
+  </iframe>
 </body>
 </html>
