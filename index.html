@@ -4779,74 +4779,25 @@ function handleSignup() {
 
 
 // It will be triggered by Telegram Login Widget callback.
-function handleLogin(user) {
-  if (!user || !user.id) {
-    showMessageModal("⚠️ Telegram login failed. No user data received.");
-    return;
+async function handleLogin(user) {
+  console.log("Telegram user object:", user);
+
+  // Send to Apps Script backend for verification + saving in Sheets
+  const params = new URLSearchParams(user).toString();
+  const url = "https://script.google.com/macros/s/AKfycbzgMUX1a78l_qtaF8mHF7duB2tjb5iEe4zBHtQ4O0lOSEemkEHFtFohapgUR7sIRpo2/exec?" + params;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  console.log("Backend response:", data);
+
+  if (data && data.customerId) {
+    document.getElementById("loginSection").innerHTML =
+      `<p>✅ Welcome, ${user.first_name} (@${user.username})</p>
+       <img src="${user.photo_url}" width="50"/>`;
+  } else {
+    alert("Login failed, please try again.");
   }
-
-  // 🔑 Call server to log in or create Telegram user
-  google.script.run
-    .withSuccessHandler(function(result) {
-      if (result && result.customerId && result.uniqueCode) {
-        // ✅ Save session values
-        localStorage.setItem("customerId", result.customerId);
-        localStorage.setItem("uniqueCode", result.uniqueCode);
-
-        // Save Telegram profile locally
-        localStorage.setItem("telegramUsername", user.username || "");
-        localStorage.setItem("telegramPhoto", user.photo_url || "");
-        localStorage.setItem(
-          "customerName",
-          (user.first_name || "") + " " + (user.last_name || "")
-        );
-
-        // 🆕 Fetch full Telegram user info from sheet
-        google.script.run
-          .withSuccessHandler(function(customerObj) {
-            if (customerObj) {
-              const realName =
-                customerObj.FullName ||
-                customerObj.FirstName ||
-                customerObj.Name ||
-                "";
-              if (realName) {
-                localStorage.setItem("customerName", realName);
-              }
-            }
-
-            // ✅ Instantly refresh header UI (Welcome + Logout button)
-            if (typeof updateLoginStatusUI === "function")
-              updateLoginStatusUI(true);
-            if (typeof renderAuthControls === "function")
-              renderAuthControls();
-
-            console.log(
-              "👤 Logged in as:",
-              localStorage.getItem("customerName") ||
-                user.username ||
-                user.id
-            );
-          })
-          .getCustomerInfo(result.customerId);
-
-        showMessageModal("✅ Logged in successfully");
-        if (typeof closeLoginModal === "function") closeLoginModal();
-      } else {
-        showMessageModal("❌ Telegram login failed.");
-      }
-    })
-    .withFailureHandler(function(err) {
-      console.error("Login error:", err);
-      showMessageModal("❌ Login error, please try again.");
-    })
-    .loginCustomer(
-      user.id,
-      user.first_name,
-      user.last_name,
-      user.username,
-      user.photo_url
-    );
 }
 
 
@@ -7998,3 +7949,4 @@ function onTelegramAuth(user) {
 
 </body>
 </html>
+
